@@ -171,7 +171,10 @@
             type: document.getElementById('type').value,
             urgency: reportForm.querySelector('input[name="urgency"]:checked').value,
             status: "Pending",
-            date: new Date().toISOString()
+            date: new Date().toISOString(),
+            // ADD THESE TWO LINES:
+            reportedBy: localStorage.getItem('userName') || 'Guest',
+            reporterId: localStorage.getItem('userId') || 'N/A'
         };
 
         try {
