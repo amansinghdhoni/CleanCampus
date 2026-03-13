@@ -147,6 +147,12 @@
 
 <script src="app.js"></script>
 <script type="module">
+    // --- SECURITY CHECK ---
+    if (localStorage.getItem('userRole') !== 'admin') {
+        alert("SECURITY ALERT: Admin access only.");
+        window.location.href = 'index.html'; // Kick them back to login
+    }
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
@@ -199,7 +205,10 @@
                 const row = `
                     <tr>
                         <td>#${report.reportId}</td>
-                        <td>User_Anon</td>
+                        <td>
+                            <b>${report.reportedBy || 'Unknown User'}</b><br>
+                            <small style="color: var(--text-muted);">${report.reporterId || ''}</small>
+                        </td>
                         <td><b>${report.type}</b></td>
                         <td>${report.location}</td>
                         <td>
