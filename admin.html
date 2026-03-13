@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel | CleanCampus</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 25px;
+        }
+        .stat-card-mini {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        .resolve-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .resolve-btn:hover { background: var(--primary-dark); }
+        .delete-btn {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+        th { background: #f1f5f9; font-weight: 600; color: var(--text-muted); }
+        .status-pill { padding: 3px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+<nav id="sidebar"></nav>
+
+<main>
+    <header>
+        <div>
+            <h1>Admin Control Panel</h1>
+            <p>System-wide monitoring & issue resolution.</p>
+        </div>
+        <div style="text-align: right;">
+            <span style="background: #1e293b; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem;">Super Admin Mode</span>
+        </div>
+    </header>
+
+    <div class="grid">
+        <div class="card" style="border-top: 4px solid var(--secondary);">
+            <h3>Total Waste Managed</h3>
+            <big>4,280 <small style="font-size: 1rem;">kg</small></big>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Across all 12 campus zones</p>
+        </div>
+        <div class="card" style="border-top: 4px solid #f59e0b;">
+            <h3>Active Reports</h3>
+            <big id="activeCount">0</big>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Requiring immediate action</p>
+        </div>
+        <div class="card" style="border-top: 4px solid var(--primary);">
+            <h3>Karma Distributed</h3>
+            <big>14,500</big>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Equivalent to ₹1,450 in discounts</p>
+        </div>
+    </div>
+
+    <div class="admin-grid">
+        <div class="card" style="grid-column: span 2;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3>Issue Resolution Center</h3>
+                <button onclick="clearAllReports()" class="delete-btn" style="background: none; border: 1px solid #fca5a5;">Clear History</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Urgency</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminReportList">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Bin Sensor Health</h3>
+            <div class="stat-card-mini">
+                <span>Academic Block (Zone A)</span>
+                <span style="color: var(--primary);">● Online</span>
+            </div>
+            <div class="stat-card-mini">
+                <span>Canteen Area (Zone B)</span>
+                <span style="color: var(--primary);">● Online</span>
+            </div>
+            <div class="stat-card-mini">
+                <span>Hostel Complex (Zone C)</span>
+                <span style="color: #ef4444;">● Offline (Maintenance)</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Staff Performance</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Resolution time by department</p>
+            <div style="margin-bottom: 15px;">
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:5px;">
+                    <span>Sanitation Team</span>
+                    <span>92%</span>
+                </div>
+                <div style="background:#e2e8f0; height:8px; border-radius:4px;">
+                    <div style="background:var(--primary); width:92%; height:100%; border-radius:4px;"></div>
+                </div>
+            </div>
+            <div>
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:5px;">
+                    <span>Recycling Logistics</span>
+                    <span>74%</span>
+                </div>
+                <div style="background:#e2e8f0; height:8px; border-radius:4px;">
+                    <div style="background:var(--secondary); width:74%; height:100%; border-radius:4px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="app.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    // Your Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyD_gROgzTPLLUXDeG0_Xgdotn0tf40r5Ic",
+      authDomain: "cleancampus-1380c.firebaseapp.com",
+      projectId: "cleancampus-1380c",
+      storageBucket: "cleancampus-1380c.firebasestorage.app",
+      messagingSenderId: "987196819293",
+      appId: "1:987196819293:web:556532232fe43ce949cab4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Resolve report
+    window.resolveReport = async function(docId) {
+        if(confirm('Mark this issue as resolved?')) {
+            await updateDoc(doc(db, "reports", docId), { status: 'Resolved' });
+            loadAdminReports();
+        }
+    };
+
+    // Delete report
+    window.deleteReport = async function(docId) {
+        if(confirm('Are you sure you want to completely remove this record?')) {
+            await deleteDoc(doc(db, "reports", docId));
+            loadAdminReports();
+        }
+    };
+
+    async function loadAdminReports() {
+        const list = document.getElementById('adminReportList');
+        const activeCount = document.getElementById('activeCount');
+
+        list.innerHTML = '<tr><td colspan="7">Loading secure database...</td></tr>';
+        let pending = 0;
+
+        try {
+            const querySnapshot = await getDocs(collection(db, "reports"));
+            list.innerHTML = '';
+
+            querySnapshot.forEach((documentSnapshot) => {
+                const report = documentSnapshot.data();
+                const docId = documentSnapshot.id;
+
+                if (report.status === 'Pending') pending++;
+
+                const row = `
+                    <tr>
+                        <td>#${report.reportId}</td>
+                        <td>User_Anon</td>
+                        <td><b>${report.type}</b></td>
+                        <td>${report.location}</td>
+                        <td>
+                            <span style="color:${report.urgency === 'High' ? 'red' : 'inherit'}">
+                                ${report.urgency}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-pill" 
+                                style="background:${report.status === 'Resolved' ? '#d1fae5' : '#fef3c7'};
+                                color:${report.status === 'Resolved' ? '#065f46' : '#92400e'};">
+                                ${report.status}
+                            </span>
+                        </td>
+                        <td>
+                            ${report.status === 'Pending'
+                                ? `<button class="resolve-btn" onclick="window.resolveReport('${docId}')">Resolve</button>`
+                                : ''
+                            }
+                            <button class="delete-btn" onclick="window.deleteReport('${docId}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+
+                list.innerHTML += row;
+            });
+
+            activeCount.innerText = pending;
+
+        } catch (error) {
+            console.error("Error loading admin reports: ", error);
+            list.innerHTML = '<tr><td colspan="7" style="color:red;">Database connection failed.</td></tr>';
+        }
+    }
+
+    // Load reports when page opens
+    loadAdminReports();
+</script>
+</body>
+</html>

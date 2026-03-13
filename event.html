@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Planner | CleanCampus</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .planner-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 1.8fr;
+            gap: 30px;
+        }
+        .info-card {
+            background: var(--primary-soft);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        .result-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .calendar-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        .date-badge {
+            background: var(--dark);
+            color: white;
+            padding: 8px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 60px;
+        }
+        .date-badge small { display: block; font-size: 0.7rem; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<nav id="sidebar"></nav>
+
+<main>
+    <header>
+        <div>
+            <h1>Event Waste Planner</h1>
+            <p>Smart resource estimation for campus gatherings.</p>
+        </div>
+        <img src="https://www.india.gov.in/sites/upload_files/npi/files/logo_0.png" height="50">
+    </header>
+
+    <div class="planner-layout">
+        <div>
+            <div class="card">
+                <h3>Plan Your Event</h3>
+                <div class="info-card">
+                    <strong>Why use this?</strong> Proper bin placement prevents littering. Enter your event details below to get an instant logistics plan.
+                </div>
+                
+                <form id="calcForm" style="margin:0; padding:0; border:none; box-shadow:none;">
+                    <label>Event Name</label>
+                    <input type="text" id="evName" placeholder="e.g. Cultural Fest 2026" required>
+                    
+                    <label>Estimated Footfall</label>
+                    <input type="number" id="evCount" placeholder="Number of participants" required>
+                    
+                    <label>Event Duration (Hours)</label>
+                    <select id="evTime">
+                        <option value="2">Less than 3 hours</option>
+                        <option value="5">3 to 6 hours</option>
+                        <option value="10">Full Day</option>
+                    </select>
+
+                    <button type="submit">Generate Logistics Plan</button>
+                </form>
+
+                <div id="calcResults" class="result-box">
+                    <h4 id="resTitle" style="margin-top:0; color:var(--primary);"></h4>
+                    <ul style="padding-left:20px; font-size:0.9rem; line-height:1.6;">
+                        <li><b>Blue Bins (Dry):</b> <span id="resBlue"></span> units</li>
+                        <li><b>Green Bins (Wet):</b> <span id="resGreen"></span> units</li>
+                        <li><b>Sanitation Staff:</b> <span id="resStaff"></span> members</li>
+                        <li><b>Clearing Frequency:</b> Every <span id="resFreq"></span> hours</li>
+                    </ul>
+                    <button style="background:var(--secondary); font-size:0.8rem; padding:8px;" onclick="window.print()">Download PDF Plan</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin:0;">Campus Green Calendar</h3>
+                <span style="background: #fee2e2; color: #b91c1c; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700;">EARN DOUBLE KARMA</span>
+            </div>
+            
+            <div class="calendar-item">
+                <div class="date-badge"><small>FEB</small> 18</div>
+                <div>
+                    <strong>Post-Fest Mega Cleanup</strong>
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin:4px 0;">Location: Main Ground | 4:00 PM</p>
+                    <a href="#" style="color:var(--primary); font-size:0.8rem; font-weight:700; text-decoration:none;">Volunteer Now →</a>
+                </div>
+            </div>
+
+            <div class="calendar-item">
+                <div class="date-badge"><small>FEB</small> 22</div>
+                <div>
+                    <strong>E-Waste Collection Drive</strong>
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin:4px 0;">Location: Admin Block | 10:00 AM</p>
+                    <a href="#" style="color:var(--primary); font-size:0.8rem; font-weight:700; text-decoration:none;">Volunteer Now →</a>
+                </div>
+            </div>
+
+            <div class="calendar-item">
+                <div class="date-badge"><small>MAR</small> 05</div>
+                <div>
+                    <strong>Zero-Waste Workshop</strong>
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin:4px 0;">Location: Seminar Hall 2</p>
+                    <a href="#" style="color:var(--primary); font-size:0.8rem; font-weight:700; text-decoration:none;">Join Session →</a>
+                </div>
+            </div>
+
+            <div style="margin-top:25px; padding:15px; background:#f8fafc; border-radius:12px; text-align:center;">
+                <p style="font-size:0.85rem; margin-bottom:10px;">Organizing your own green event?</p>
+                <button style="background:var(--dark); font-size:0.8rem; width:auto;">Register Your Event</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="app.js"></script>
+<script>
+    document.getElementById('calcForm').onsubmit = (e) => {
+        e.preventDefault();
+        const name = document.getElementById('evName').value;
+        const count = parseInt(document.getElementById('evCount').value);
+        const hours = parseInt(document.getElementById('evTime').value);
+        
+        // Logical calculation simulation
+        const totalSets = Math.ceil(count / 75); // 1 set per 75 people
+        const staff = Math.max(2, Math.ceil(count / 200));
+        const freq = hours > 5 ? 2 : 4;
+
+        document.getElementById('calcResults').style.display = 'block';
+        document.getElementById('resTitle').innerText = "Plan for " + name;
+        document.getElementById('resBlue').innerText = totalSets;
+        document.getElementById('resGreen').innerText = totalSets;
+        document.getElementById('resStaff').innerText = staff;
+        document.getElementById('resFreq').innerText = freq;
+    };
+</script>
+</body>
+</html>

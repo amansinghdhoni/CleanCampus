@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Live Bins | CleanCampus</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .map-placeholder {
+            background: #e5e7eb;
+            height: 350px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .map-marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border: 3px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .marker-label {
+            position: absolute;
+            background: var(--dark);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            top: -25px;
+            left: -10px;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+<nav id="sidebar"></nav>
+
+<main>
+    <header>
+        <h1>Live Bin Status</h1>
+        <p>Locate the nearest empty bin across campus</p>
+    </header>
+
+    <div class="card" style="margin-bottom: 30px;">
+        <h3>Campus Map View</h3>
+        <div class="map-placeholder">
+            <span style="color: var(--text-muted);">🗺️ Interactive Map (Mockup)</span>
+            
+            <div class="map-marker" style="top: 30%; left: 20%;">
+                <span class="marker-label">Bin A (Academic Block)</span>
+            </div>
+            <div class="map-marker" style="top: 70%; left: 50%; background: #f59e0b;">
+                <span class="marker-label">Bin B (Canteen)</span>
+            </div>
+            <div class="map-marker" style="top: 20%; left: 80%; background: #ef4444;">
+                <span class="marker-label">Bin C (Hostel A)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="card status green">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>Bin A - Academic Block</h3>
+                <span style="font-size: 0.8rem; opacity: 0.8;">Last updated: 2m ago</span>
+            </div>
+            <big>Empty (12%)</big>
+            <p style="margin-top: 10px; font-size: 0.9rem;">Best for: Paper & Plastics</p>
+        </div>
+
+        <div class="card status yellow">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>Bin B - Canteen Area</h3>
+                <span style="font-size: 0.8rem; opacity: 0.8;">Last updated: 5m ago</span>
+            </div>
+            <big>Half Full (54%)</big>
+            <p style="margin-top: 10px; font-size: 0.9rem;">Best for: Food waste</p>
+        </div>
+
+        <div class="card status red">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>Bin C - Hostel Block</h3>
+                <span style="font-size: 0.8rem; opacity: 0.8;">Last updated: 1m ago</span>
+            </div>
+            <big>Full (92%)</big>
+            <p style="margin-top: 10px; font-size: 0.9rem;">Wait for clearance or use Bin D</p>
+        </div>
+    </div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

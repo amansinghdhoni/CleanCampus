@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Report Issue | CleanCampus</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .report-container {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 30px;
+        }
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-resolved { background: #d1fae5; color: #065f46; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; border-radius: 12px; overflow: hidden; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        th { background: #f8fafc; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+
+<nav id="sidebar"></nav>
+
+<main>
+    <header>
+        <div>
+            <h1>Report a Waste Issue</h1>
+            <p>Help us maintain campus cleanliness by reporting overflows or litter.</p>
+        </div>
+    </header>
+
+    <div class="report-container">
+        <div class="card">
+            <h3>New Report</h3>
+            <form id="issueForm" style="margin: 0; padding: 0; border: none; box-shadow: none; max-width: 100%;">
+                <label>Location</label>
+                <select id="loc" required>
+                    <option value="">Select Area</option>
+                    <option>Academic Block - North</option>
+                    <option>Canteen Main Entrance</option>
+                    <option>Hostel B - Ground Floor</option>
+                    <option>Central Library</option>
+                </select>
+
+                <label>Issue Type</label>
+                <select id="type" required>
+                    <option value="">Select Issue</option>
+                    <option>Overflowing Bin</option>
+                    <option>Mixed Waste (Wrong Segregation)</option>
+                    <option>Littering/Spillage</option>
+                    <option>Missing Bin</option>
+                </select>
+
+                <label>Urgency Level</label>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <label style="font-size: 0.8rem;"><input type="radio" name="urgency" value="Low" checked> Low</label>
+                    <label style="font-size: 0.8rem;"><input type="radio" name="urgency" value="Medium"> Medium</label>
+                    <label style="font-size: 0.8rem;"><input type="radio" name="urgency" value="High"> High</label>
+                </div>
+
+                <label>Photo Evidence (Simulation)</label>
+                <input type="file" accept="image/*" style="font-size: 0.8rem;">
+
+                <textarea id="desc" placeholder="Provide more details (e.g., Near water cooler)" rows="3"></textarea>
+                
+                <button type="submit">Submit Report</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>My Reported Issues</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportList">
+                        </tbody>
+                </table>
+            </div>
+            <p id="emptyMsg" style="text-align: center; color: var(--text-muted); margin-top: 20px; font-size: 0.9rem;">No reports found.</p>
+        </div>
+    </div>
+</main>
+
+<script src="app.js"></script>
+<script type="module">
+    // 1. Import Firebase from CDN
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    // 2. Your Firebase Config (UPDATED)
+    const firebaseConfig = {
+      apiKey: "AIzaSyD_gROgzTPLLUXDeG0_Xgdotn0tf40r5Ic",
+      authDomain: "cleancampus-1380c.firebaseapp.com",
+      projectId: "cleancampus-1380c",
+      storageBucket: "cleancampus-1380c.firebasestorage.app",
+      messagingSenderId: "987196819293",
+      appId: "1:987196819293:web:556532232fe43ce949cab4"
+    };
+
+    // 3. Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const reportForm = document.getElementById('issueForm');
+    const reportList = document.getElementById('reportList');
+    const emptyMsg = document.getElementById('emptyMsg');
+
+    // 4. Load Reports
+    async function loadReports() {
+        reportList.innerHTML = '<tr><td colspan="4">Loading reports...</td></tr>';
+
+        try {
+            const querySnapshot = await getDocs(collection(db, "reports"));
+            reportList.innerHTML = '';
+
+            if (querySnapshot.empty) {
+                emptyMsg.style.display = 'block';
+            } else {
+                emptyMsg.style.display = 'none';
+
+                querySnapshot.forEach((doc) => {
+                    const report = doc.data();
+
+                    const row = `
+                        <tr>
+                            <td>#${report.reportId}</td>
+                            <td><b>${report.type}</b></td>
+                            <td>${report.location}</td>
+                            <td>
+                                <span class="${report.status === 'Resolved' ? 'status-resolved' : 'status-pending'}">
+                                    ${report.status}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+
+                    reportList.innerHTML += row;
+                });
+            }
+
+        } catch (error) {
+            console.error("Error loading reports: ", error);
+        }
+    }
+
+    // 5. Submit Report
+    reportForm.onsubmit = async (e) => {
+        e.preventDefault();
+
+        const submitBtn = reportForm.querySelector('button[type="submit"]');
+        submitBtn.innerText = "Submitting...";
+        submitBtn.disabled = true;
+
+        const newReport = {
+            reportId: Math.floor(1000 + Math.random() * 9000),
+            location: document.getElementById('loc').value,
+            type: document.getElementById('type').value,
+            urgency: reportForm.querySelector('input[name="urgency"]:checked').value,
+            status: "Pending",
+            date: new Date().toISOString()
+        };
+
+        try {
+            await addDoc(collection(db, "reports"), newReport);
+
+            alert("Report #" + newReport.reportId + " submitted successfully!");
+
+            reportForm.reset();
+            loadReports();
+
+        } catch (error) {
+            console.error("Error adding report: ", error);
+        }
+
+        submitBtn.innerText = "Submit Report";
+        submitBtn.disabled = false;
+    };
+
+    // Load reports on page start
+    loadReports();
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Segregation Guide | CleanCampus</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .guide-section {
+            margin-bottom: 50px;
+        }
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+        .item-chip {
+            display: inline-block;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.85rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 20px;
+            background: #000;
+            margin-top: 20px;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+        .tip-box {
+            background: var(--primary-soft);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<nav id="sidebar"></nav>
+
+<main>
+    <header>
+        <div>
+            <h1>Waste Segregation Encyclopedia</h1>
+            <p>Know your waste. Save the planet.</p>
+        </div>
+        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/e4/Swachh_Bharat_Abhiyan_logo.svg/1200px-Swachh_Bharat_Abhiyan_logo.svg.png" height="50">
+    </header>
+
+    <div class="guide-section">
+        <div class="category-header">
+            <h2 style="color: #065f46;">🟢 Green Bin: Biodegradable (Wet)</h2>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <h3>What goes here?</h3>
+                <div id="chips">
+                    <span class="item-chip">🍌 Fruit Peels</span>
+                    <span class="item-chip">🍕 Leftover Food</span>
+                    <span class="item-chip">☕ Coffee Grounds</span>
+                    <span class="item-chip">🥚 Egg Shells</span>
+                    <span class="item-chip">🍂 Garden Leaves</span>
+                    <span class="item-chip">🦴 Meat Bones</span>
+                </div>
+                <div class="tip-box">
+                    <strong>Pro-Tip:</strong> Do not put wet waste in plastic bags. Empty the waste directly into the bin to help in composting!
+                </div>
+            </div>
+            <div class="card">
+                <h3>Process: Composting</h3>
+                <p>This waste is sent to our campus biomethanation plant to produce organic manure for our gardens.</p>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/n9OhxK5_0m0" title="Composting Guide"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="guide-section">
+        <div class="category-header">
+            <h2 style="color: #1e40af;">🔵 Blue Bin: Recyclable (Dry)</h2>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <h3>What goes here?</h3>
+                <div id="chips">
+                    <span class="item-chip">🧴 Plastic Bottles</span>
+                    <span class="item-chip">📦 Cardboard Boxes</span>
+                    <span class="item-chip">📰 Newspapers</span>
+                    <span class="item-chip">🥤 Soda Cans</span>
+                    <span class="item-chip">🥛 Milk Packets (Rinsed)</span>
+                    <span class="item-chip">🛍️ Clean Wrappers</span>
+                </div>
+                <div class="tip-box" style="border-left-color: #1e40af; background: #eff6ff;">
+                    <strong>Pro-Tip:</strong> Rinse milk packets and food containers. Dirty plastic cannot be recycled!
+                </div>
+            </div>
+            <div class="card">
+                <h3>Impact: Recycling</h3>
+                <p>Dry waste is sorted and sold to authorized recyclers, generating revenue for campus green initiatives.</p>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/VlRVPumm4go" title="Recycling Process"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="guide-section">
+        <div class="category-header">
+            <h2 style="color: #991b1b;">🔴 Red/Black Bin: Hazardous & E-Waste</h2>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <h3>Hazardous Waste</h3>
+                <div id="chips">
+                    <span class="item-chip">🔋 Batteries</span>
+                    <span class="item-chip">💡 CFL Bulbs</span>
+                    <span class="item-chip">🩹 Used Bandages</span>
+                    <span class="item-chip">🧴 Expired Medicines</span>
+                    <span class="item-chip">🔌 Broken Chargers</span>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://cpcb.nic.in/uploads/hwmd/Hazardous_Waste_Header.jpg" alt="Hazardous Waste" style="width:100%; border-radius:12px; margin-bottom:15px;">
+                <p>These items contain toxic chemicals. Never mix them with regular waste as they can contaminate soil and water.</p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

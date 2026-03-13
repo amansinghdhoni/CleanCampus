@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | CleanCampus</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-page">
+<main>
+    <form id="loginForm">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/e4/Swachh_Bharat_Abhiyan_logo.svg/1200px-Swachh_Bharat_Abhiyan_logo.svg.png" height="60">
+            <h2 style="margin-top: 10px;">CleanCampus Login</h2>
+        </div>
+        
+        <label>Select Role</label>
+        <select id="role" required>
+            <option value="student">Student</option>
+            <option value="staff">Staff</option>
+            <option value="admin">Admin</option>
+        </select>
+        
+        <label>User ID</label>
+        <input type="text" id="userId" placeholder="e.g., CC-2026" required>
+        
+        <button type="submit">Enter Dashboard</button>
+    </form>
+</main>
+<script>
+    document.getElementById('loginForm').onsubmit = (e) => {
+        e.preventDefault();
+        const role = document.getElementById('role').value;
+        localStorage.setItem('userRole', role);
+        localStorage.setItem('userId', document.getElementById('userId').value);
+        
+        // Redirect logic
+        if(role === 'admin') window.location.href = 'admin.html';
+        else window.location.href = 'dashboard.html';
+    };
+</script>
+</body>
+</html>
