@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
             html += `<a href="admin.html" class="${activeAdmin}" style="border-left: 3px solid #ef4444;">Admin Panel</a>`;
         }
 
-        html += `<a href="login.html" onclick="localStorage.clear()" style="margin-top: auto; color: #ef4444;">Logout</a>`;
+        html += `<a href="index.html" onclick="localStorage.clear()" style="margin-top: auto; color: #ef4444;">Logout</a>`;
         
         sidebar.innerHTML = html;
     }
