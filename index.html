@@ -2,40 +2,184 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login | CleanCampus</title>
+    <title>Welcome | CleanCampus</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-container { max-width: 450px; width: 100%; }
+        .tab-group { display: flex; margin-bottom: 25px; border-bottom: 2px solid var(--border); }
+        .tab-btn { background: none; color: var(--text-muted); width: 50%; padding: 12px; border-radius: 0; margin: 0; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: transparent; }
+        .tab-btn:hover { transform: none; box-shadow: none; background: rgba(16, 185, 129, 0.05); }
+        .hidden { display: none !important; }
+        .error-msg { color: #dc2626; font-size: 0.85rem; margin-bottom: 15px; text-align: center; display: none; }
+    </style>
 </head>
 <body class="login-page">
 <main>
-    <form id="loginForm">
-        <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/e4/Swachh_Bharat_Abhiyan_logo.svg/1200px-Swachh_Bharat_Abhiyan_logo.svg.png" height="60">
-            <h2 style="margin-top: 10px;">CleanCampus Login</h2>
-        </div>
-        
-        <label>Select Role</label>
-        <select id="role" required>
-            <option value="student">Student</option>
-            <option value="staff">Staff</option>
-            <option value="admin">Admin</option>
-        </select>
-        
-        <label>User ID</label>
-        <input type="text" id="userId" placeholder="e.g., CC-2026" required>
-        
-        <button type="submit">Enter Dashboard</button>
-    </form>
+    <div class="auth-container">
+        <form id="authForm" style="width: 100%; max-width: 100%;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/e4/Swachh_Bharat_Abhiyan_logo.svg/1200px-Swachh_Bharat_Abhiyan_logo.svg.png" height="60">
+                <h2 style="margin-top: 10px; color: var(--dark);">CleanCampus</h2>
+            </div>
+
+            <div class="tab-group">
+                <button type="button" id="tabLogin" class="tab-btn active">Login</button>
+                <button type="button" id="tabSignup" class="tab-btn">Sign Up</button>
+            </div>
+
+            <p id="errorBox" class="error-msg">Invalid credentials.</p>
+
+            <label>Role</label>
+            <select id="role" required>
+                <option value="student">Student</option>
+                <option value="staff">Staff</option>
+                <option value="admin">Admin</option>
+            </select>
+
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Enter username" required>
+
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter password" required>
+
+            <div id="signupFields" class="hidden">
+                <label>Full Name</label>
+                <input type="text" id="fullName" placeholder="e.g., Aman Singh">
+                
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;">
+                        <label>Age</label>
+                        <input type="number" id="age" placeholder="Age">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>DOB</label>
+                        <input type="date" id="dob">
+                    </div>
+                </div>
+
+                <label>Class/Designation</label>
+                <input type="text" id="userClass" placeholder="e.g., BSc CS 2nd Year">
+
+                <label>Department</label>
+                <input type="text" id="dept" placeholder="e.g., Computer Science">
+            </div>
+            
+            <button type="submit" id="submitBtn">Login Securely</button>
+        </form>
+    </div>
 </main>
-<script>
-    document.getElementById('loginForm').onsubmit = (e) => {
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD_gROgzTPLLUXDeG0_Xgdotn0tf40r5Ic",
+      authDomain: "cleancampus-1380c.firebaseapp.com",
+      projectId: "cleancampus-1380c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Tab Switching Logic
+    let isLogin = true;
+    const tabLogin = document.getElementById('tabLogin');
+    const tabSignup = document.getElementById('tabSignup');
+    const signupFields = document.getElementById('signupFields');
+    const submitBtn = document.getElementById('submitBtn');
+    const roleSelect = document.getElementById('role');
+    const errorBox = document.getElementById('errorBox');
+
+    tabSignup.addEventListener('click', () => {
+        isLogin = false;
+        tabSignup.classList.add('active');
+        tabLogin.classList.remove('active');
+        signupFields.classList.remove('hidden');
+        submitBtn.innerText = "Create Account";
+        // Admins can't sign up via the form
+        if(roleSelect.value === 'admin') roleSelect.value = 'student';
+        roleSelect.options[2].disabled = true; 
+    });
+
+    tabLogin.addEventListener('click', () => {
+        isLogin = true;
+        tabLogin.classList.add('active');
+        tabSignup.classList.remove('active');
+        signupFields.classList.add('hidden');
+        submitBtn.innerText = "Login Securely";
+        roleSelect.options[2].disabled = false;
+    });
+
+    document.getElementById('authForm').onsubmit = async (e) => {
         e.preventDefault();
+        errorBox.style.display = 'none';
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Processing...";
+
         const role = document.getElementById('role').value;
-        localStorage.setItem('userRole', role);
-        localStorage.setItem('userId', document.getElementById('userId').value);
-        
-        // Redirect logic
-        if(role === 'admin') window.location.href = 'admin.html';
-        else window.location.href = 'dashboard.html';
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+
+        try {
+            if (isLogin) {
+                // --- ADMIN LOGIN LOGIC ---
+                if (role === 'admin') {
+                    if (username === 'Amansingh35' && password === 'admin123') {
+                        localStorage.setItem('userRole', 'admin');
+                        localStorage.setItem('userName', 'Super Admin');
+                        window.location.href = 'admin.html';
+                        return;
+                    } else {
+                        throw new Error("Invalid Admin Credentials.");
+                    }
+                }
+
+                // --- STUDENT/STAFF LOGIN LOGIC ---
+                const q = query(collection(db, "users"), where("username", "==", username), where("password", "==", password), where("role", "==", role));
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    throw new Error("User not found or incorrect password.");
+                } else {
+                    const userData = querySnapshot.docs[0].data();
+                    localStorage.setItem('userRole', userData.role);
+                    localStorage.setItem('userId', username);
+                    localStorage.setItem('userName', userData.fullName);
+                    window.location.href = 'dashboard.html';
+                }
+
+            } else {
+                // --- SIGN UP LOGIC ---
+                // Check if username already exists
+                const q = query(collection(db, "users"), where("username", "==", username));
+                const checkExist = await getDocs(q);
+                if (!checkExist.empty) throw new Error("Username already taken!");
+
+                const newUser = {
+                    role: role,
+                    username: username,
+                    password: password, // In a production app, never store plain passwords!
+                    fullName: document.getElementById('fullName').value,
+                    age: document.getElementById('age').value,
+                    dob: document.getElementById('dob').value,
+                    userClass: document.getElementById('userClass').value,
+                    dept: document.getElementById('dept').value,
+                    createdAt: new Date().toISOString()
+                };
+
+                await addDoc(collection(db, "users"), newUser);
+                alert("Account created successfully! Please login.");
+                tabLogin.click(); // Switch back to login view
+            }
+        } catch (error) {
+            errorBox.innerText = error.message;
+            errorBox.style.display = 'block';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = isLogin ? "Login Securely" : "Create Account";
+        }
     };
 </script>
 </body>
