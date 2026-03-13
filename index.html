@@ -72,7 +72,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, setDoc, doc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD_gROgzTPLLUXDeG0_Xgdotn0tf40r5Ic",
@@ -169,7 +169,7 @@
                     createdAt: new Date().toISOString()
                 };
 
-                await addDoc(collection(db, "users"), newUser);
+                await setDoc(doc(db, "users", username), newUser);
                 alert("Account created successfully! Please login.");
                 tabLogin.click(); // Switch back to login view
             }
